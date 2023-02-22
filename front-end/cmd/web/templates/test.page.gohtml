@@ -7,7 +7,7 @@
                 <h1 class="mt-5">Test microservices</h1>
                 <hr>
 
-                <a id="brokerBtn" class="btn btn-outline-secondary" href="javascript:void(0);" />
+                <a id="brokerBtn" class="btn btn-outline-secondary" href="javascript:void(0);">Test Broker</a>
 
                 <div id="output" class="mt-5" style="outline: 1px solid silver; padding: 2em;">
                     <span class="text-muted">Output shows here...</span>
@@ -43,14 +43,17 @@
             fetch("http:\/\/localhost:8080", body)
                 .then((response) => response.json())
                 .then((data) => {
-                    sent.innerHTML("empty post request");
+                    sent.innerHTML = "empty post request";
                     received.innerHTML = JSON.stringify(data, undefined, 4);
 
                     if (data.error) {
-                    
+                        console.log(data.message)
                     } else {
-                    
+                        output.innerHTML += /* HTML */ `<br /><strong>Response from broker service</strong>: ${data.message}`
                     }
+                })
+                .catch((error) => {
+                    output.innerHTML += /* HTML */ `<br /><br />Error: ${error}`
                 })
         });
     </script>
