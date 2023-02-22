@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "front-end"
+		},
+		{
+			"path": "broker-service"
+		},
+		{
+			"path": "project"
+		}
+	],
+	"settings": {
+		"nuxt.isNuxtApp": false,
+		"cSpell.words": [
+			"gohtml"
+		]
+	}
+}
