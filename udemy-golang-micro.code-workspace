@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "project"
+		},
+		{
+			"path": "test-code"
 		}
 	],
 	"settings": {
