@@ -6,8 +6,8 @@
             <div class="col">
                 <h1 class="mt-5">Test microservices</h1>
                 <hr>
-
                 <a id="brokerBtn" class="btn btn-outline-secondary" href="javascript:void(0);">Test Broker</a>
+                <a id="authBrokerBtn" class="btn btn-outline-secondary" href="javascript:void(0);">Test Auth</a>
 
                 <div id="output" class="mt-5" style="outline: 1px solid silver; padding: 2em;">
                     <span class="text-muted">Output shows here...</span>
@@ -18,13 +18,13 @@
             <div class="col">
                 <h4 class="mt-5">Sent</h4>
                 <div class="mt-1" style="outline: 1px solid silver; padding: 2em;">
-                    <pre id="payload"><span class="text-muted">Nothing sent yet...</span></pre>
+                    <pre id="payload" class="mb-0"><span class="text-muted">Nothing sent yet...</span></pre>
                 </div>
             </div>
             <div class="col">
                 <h4 class="mt-5">Received</h4>
                 <div class="mt-1" style="outline: 1px solid silver; padding: 2em;">
-                    <pre id="received"><span class="text-muted">Nothing received yet...</span></pre>
+                    <pre id="received" class="mb-0"><span class="text-muted">Nothing received yet...</span></pre>
                 </div>
             </div>
         </div>
@@ -33,27 +33,58 @@
 
 {{define "js"}}
     <script>
-        var brokerBtn = document.getElementById("brokerBtn");
-        var output = document.getElementById("output");
-        var sent = document.getElementById("payload");
-        var received = document.getElementById("received");
+        const brokerBtn = document.getElementById("brokerBtn");
+        const authBrokerBtn = document.getElementById("authBrokerBtn");
+        const output = document.getElementById("output");
+        const sent = document.getElementById("payload");
+        const received = document.getElementById("received");
 
         brokerBtn.addEventListener("click", function() {
-            var body = { method: "POST" };
+            const body = { method: "POST" };
             fetch("http:\/\/localhost:8080", body)
                 .then((response) => response.json())
                 .then((data) => {
                     sent.innerHTML = "empty post request";
                     received.innerHTML = JSON.stringify(data, undefined, 4);
-
                     if (data.error) {
-                        console.log(data.message)
+                        console.log(data.message);
                     } else {
-                        output.innerHTML += /* HTML */ `<br /><strong>Response from broker service</strong>: ${data.message}`
+                        output.innerHTML += `<br /><strong>Response from broker service</strong>: ${data.message}`;
                     }
                 })
                 .catch((error) => {
-                    output.innerHTML += /* HTML */ `<br /><br />Error: ${error}`
+                    output.innerHTML += `<br /><br />Error: ${error}`;
+                })
+        });
+
+        authBrokerBtn.addEventListener("click", function() {
+            const payload = {
+                action: "auth",
+                auth: {
+                    email: "admin@example.com",
+                    password: "verysecret",
+                }
+            };
+            const headers = new Headers();
+            headers.append("Content-Type", "application/json")
+            const body = {
+                method: "POST",
+                body: JSON.stringify(payload),
+                headers: headers
+            }
+            fetch("http:\/\/localhost:8080/handle", body)
+                .then((response) => response.json())
+                .then((data) => {
+                    sent.innerHTML = JSON.stringify(payload, undefined, 4);
+                    received.innerHTML = JSON.stringify(data, undefined, 4);
+                    if (data.error) {
+                        output.innerHTML += `<br /><strong>Error:</strong> ${data.message}`;
+                    } else {
+                        output.innerHTML += `<br /><strong>Response from broker service</strong> ${data.message}`;
+                    }
+                })
+                .catch((error) => {
+                    output.innerHTML += `<br /><br />Error: ${error}`;
                 })
         });
     </script>
