@@ -19,6 +19,7 @@
 	"settings": {
 		"nuxt.isNuxtApp": false,
 		"cSpell.words": [
+			"bson",
 			"gohtml"
 		]
 	}
