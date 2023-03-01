@@ -17,15 +17,15 @@ func New(mongo *mongo.Client) Models {
 	client = mongo
 
 	return Models{
-		logEntry: logEntry{},
+		LogEntry: LogEntry{},
 	}
 }
 
 type Models struct {
-	logEntry logEntry
+	LogEntry LogEntry
 }
 
-type logEntry struct {
+type LogEntry struct {
 	ID        string    `bson:"_id,omitempty" json:"id,omitempty"`
 	Name      string    `bson:"name" json:"name"`
 	Data      string    `bson:"data" json:"data"`
@@ -33,10 +33,10 @@ type logEntry struct {
 	UpdatedAt time.Time `bson:"updated_at" json:"updated_at"`
 }
 
-func (l *logEntry) Insert(entry logEntry) error {
+func (l *LogEntry) Insert(entry LogEntry) error {
 	collection := client.Database("logs").Collection("logs")
 
-	_, err := collection.InsertOne(context.TODO(), logEntry{
+	_, err := collection.InsertOne(context.TODO(), LogEntry{
 		Name:      entry.Name,
 		Data:      entry.Data,
 		CreatedAt: time.Now(),
@@ -50,7 +50,7 @@ func (l *logEntry) Insert(entry logEntry) error {
 	return nil
 }
 
-func (l *logEntry) All(entry logEntry) ([]*logEntry, error) {
+func (l *LogEntry) All(entry LogEntry) ([]*LogEntry, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
 	defer cancel()
 
@@ -66,10 +66,10 @@ func (l *logEntry) All(entry logEntry) ([]*logEntry, error) {
 	}
 	defer cursor.Close(ctx)
 
-	var logs []*logEntry
+	var logs []*LogEntry
 
 	for cursor.Next(ctx) {
-		var item logEntry
+		var item LogEntry
 
 		err := cursor.Decode(&item)
 		if err != nil {
@@ -83,7 +83,7 @@ func (l *logEntry) All(entry logEntry) ([]*logEntry, error) {
 	return logs, nil
 }
 
-func (l *logEntry) GetOne(id string) (*logEntry, error) {
+func (l *LogEntry) GetOne(id string) (*LogEntry, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
 	defer cancel()
 
@@ -94,7 +94,7 @@ func (l *logEntry) GetOne(id string) (*logEntry, error) {
 		return nil, err
 	}
 
-	var entry logEntry
+	var entry LogEntry
 	err = collection.FindOne(ctx, bson.M{"_id": docID}).Decode(&entry)
 	if err != nil {
 		return nil, err
@@ -103,7 +103,7 @@ func (l *logEntry) GetOne(id string) (*logEntry, error) {
 	return &entry, nil
 }
 
-func (l *logEntry) DropCollection() error {
+func (l *LogEntry) DropCollection() error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
 	defer cancel()
 
@@ -116,7 +116,7 @@ func (l *logEntry) DropCollection() error {
 	return nil
 }
 
-func (l *logEntry) Update(id string, data logEntry) (*mongo.UpdateResult, error) {
+func (l *LogEntry) Update(id string, data LogEntry) (*mongo.UpdateResult, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
 	defer cancel()
 
