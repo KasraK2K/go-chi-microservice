@@ -40,6 +40,16 @@ services:
     environment:
       DSN: "host=postgres port=5432 user=postgres password=password dbname=users sslmode=disable timezone=UTC connect_timeout=5"
 
+  # Logger Service ---------------------------------------------------------------
+  logger-service:
+    build:
+      context: ./../logger-service
+      dockerfile: ./../logger-service/logger-service.dockerfile
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+
   # PostgreSQL Service -----------------------------------------------------------
   postgres:
     image: "postgres:14.2"
