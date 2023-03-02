@@ -3,3 +3,4 @@ front-end/frontApp
 broker-service/brokerApp
 project/db-data/
 authentication-service/authApp
+logger-service/loggerApp

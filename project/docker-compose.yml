@@ -2,18 +2,6 @@ version: '3'
 
 services:
 
-  # Front End Service ------------------------------------------------------------
-  # front-end:
-  #   build:
-  #     context: ./../front-end
-  #     dockerfile: ./../front-end/front-end-service.dockerfile
-  #   ports:
-  #     - "3000:80"
-  #   restart: always
-  #   deploy:
-  #     mode: replicated
-  #     replicas: 1
-
   # Broker Service ---------------------------------------------------------------
   broker-service:
     build:
@@ -21,6 +9,7 @@ services:
       dockerfile: ./../broker-service/broker-service.dockerfile
     ports:
       - "8080:80"
+    container_name: broker-service
     restart: always
     deploy:
       mode: replicated
@@ -33,6 +22,7 @@ services:
       dockerfile: ./../authentication-service/authentication-service.dockerfile
     ports:
       - "8081:80"
+    container_name: authentication-service
     restart: always
     deploy:
       mode: replicated
@@ -45,6 +35,7 @@ services:
     build:
       context: ./../logger-service
       dockerfile: ./../logger-service/logger-service.dockerfile
+    container_name: logger-service
     restart: always
     deploy:
       mode: replicated
@@ -55,6 +46,7 @@ services:
     image: "postgres:14.2"
     ports:
       - "5432:5432"
+    container_name: postgres
     restart: always
     deploy:
       mode: replicated
@@ -71,6 +63,7 @@ services:
     image: "mongo:4.2.16-bionic"
     ports:
       - "27017:27017"
+    container_name: mongo
     environment:
       MONGO_INITDB_DATABASE: logs
       MONGO_INITDB_ROOT_USERNAME: admin
