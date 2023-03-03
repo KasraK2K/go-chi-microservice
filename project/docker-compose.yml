@@ -98,3 +98,15 @@ services:
             - "1025:1025"
             - "8025:8025"
         container_name: mailhog
+
+    # RabbitMQ Service -------------------------------------------------------------
+    rabbitmq:
+        image: "rabbitmq:3.9-alpine"
+        ports:
+            - "5672:5672"
+        container_name: rabbitmq
+        deploy:
+            mode: replicated
+            replicas: 1
+        volumes:
+            - ./db-data/rabbitmq/:/var/lib/rabbitmq/
