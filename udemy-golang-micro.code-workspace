@@ -14,13 +14,18 @@
 		},
 		{
 			"path": "logger-service"
+		},
+		{
+			"path": "mail-service"
 		}
 	],
 	"settings": {
 		"nuxt.isNuxtApp": false,
 		"cSpell.words": [
 			"bson",
-			"gohtml"
+			"gohtml",
+			"Premailer",
+			"SSLTLS"
 		]
 	}
 }
