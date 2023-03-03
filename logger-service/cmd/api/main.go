@@ -34,7 +34,7 @@ func main() {
 	client = mongoClient
 
 	// Create a context in order to disconnect
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
 	// Close connection

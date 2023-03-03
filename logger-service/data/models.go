@@ -51,7 +51,7 @@ func (l *LogEntry) Insert(entry LogEntry) error {
 }
 
 func (l *LogEntry) All(entry LogEntry) ([]*LogEntry, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
 	collection := client.Database("logs").Collection("logs")
@@ -84,7 +84,7 @@ func (l *LogEntry) All(entry LogEntry) ([]*LogEntry, error) {
 }
 
 func (l *LogEntry) GetOne(id string) (*LogEntry, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
 	collection := client.Database("logs").Collection("logs")
@@ -104,7 +104,7 @@ func (l *LogEntry) GetOne(id string) (*LogEntry, error) {
 }
 
 func (l *LogEntry) DropCollection() error {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
 	collection := client.Database("logs").Collection("logs")
@@ -117,7 +117,7 @@ func (l *LogEntry) DropCollection() error {
 }
 
 func (l *LogEntry) Update(id string, data LogEntry) (*mongo.UpdateResult, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
 	collection := client.Database("logs").Collection("logs")
