@@ -10,7 +10,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-const dbTimeout = time.Second * 3
+const dbTimeout = 3 * time.Second
 
 var db *sql.DB
 
