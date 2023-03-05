@@ -17,11 +17,15 @@
 		},
 		{
 			"path": "mail-service"
+		},
+		{
+			"path": "listener-service"
 		}
 	],
 	"settings": {
 		"nuxt.isNuxtApp": false,
 		"cSpell.words": [
+			"amqp",
 			"bson",
 			"gohtml",
 			"Premailer",
