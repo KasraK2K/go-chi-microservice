@@ -29,6 +29,7 @@
 			"bson",
 			"gohtml",
 			"Premailer",
+			"rabbitmq",
 			"SSLTLS"
 		]
 	}
