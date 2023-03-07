@@ -13,18 +13,18 @@ import (
 
 func main() {
 	// Try to connect RabbitMQ
-	rabbitCon, err := connect()
+	rabbitConn, err := connect()
 	if err != nil {
 		log.Println(err)
 		os.Exit(1)
 	}
-	defer rabbitCon.Close()
+	defer rabbitConn.Close()
 
 	// Start listening for messages
 	fmt.Println("Listening for and consuming RabbitMQ messages...")
 
 	// Create Consumer
-	consumer, err := event.NewConsumer(rabbitCon)
+	consumer, err := event.NewConsumer(rabbitConn)
 	if err != nil {
 		panic(err)
 	}
