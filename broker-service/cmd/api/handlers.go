@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/rpc"
 )
 
 type RequestPayload struct {
@@ -24,6 +25,11 @@ type AuthPayload struct {
 type LogPayload struct {
 	Name string `json:"name"`
 	Data string `json:"data"`
+}
+
+type RPCPayload struct {
+	Name string
+	Data string
 }
 
 type MailPayload struct {
@@ -55,7 +61,7 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 	case "auth":
 		app.authenticate(w, requestPayload.Auth)
 	case "log":
-		app.logEventViaRabbit(w, requestPayload.Log)
+		app.logEventViaRPC(w, requestPayload.Log)
 	case "mail":
 		app.sendMail(w, requestPayload.Mail)
 
@@ -118,42 +124,6 @@ func (app *Config) authenticate(w http.ResponseWriter, a AuthPayload) {
 	app.writeJSON(w, http.StatusAccepted, payload)
 }
 
-func (app *Config) logItem(w http.ResponseWriter, entry LogPayload) {
-	// Create some json we'll send to the auth microservice
-	jsonData, _ := json.MarshalIndent(entry, "", "\t")
-
-	serviceUrl := "http://logger-service/log"
-	request, err := http.NewRequest("POST", serviceUrl, bytes.NewBuffer(jsonData))
-	if err != nil {
-		app.errorJSON(w, err)
-		return
-	}
-
-	request.Header.Set("Content-Type", "application/json")
-
-	client := &http.Client{}
-	response, err := client.Do(request)
-	if err != nil {
-		app.errorJSON(w, err)
-		return
-	}
-	defer response.Body.Close()
-
-	// Make sure we get back correct status code
-	if response.StatusCode != http.StatusAccepted {
-		app.errorJSON(w, errors.New("error calling log service"))
-		return
-	}
-
-	// Create variable we'll read response.Body into
-	var payload = jsonResponse{
-		Error:   false,
-		Message: "logged",
-	}
-
-	app.writeJSON(w, http.StatusAccepted, payload)
-}
-
 func (app *Config) sendMail(w http.ResponseWriter, msg MailPayload) {
 	// Create some json we'll send to the mail microservice
 	jsonData, _ := json.MarshalIndent(msg, "", "\t")
@@ -190,6 +160,44 @@ func (app *Config) sendMail(w http.ResponseWriter, msg MailPayload) {
 	app.writeJSON(w, http.StatusAccepted, payload)
 }
 
+// HTTP log
+func (app *Config) logItem(w http.ResponseWriter, entry LogPayload) {
+	// Create some json we'll send to the auth microservice
+	jsonData, _ := json.MarshalIndent(entry, "", "\t")
+
+	serviceUrl := "http://logger-service/log"
+	request, err := http.NewRequest("POST", serviceUrl, bytes.NewBuffer(jsonData))
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	request.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+	defer response.Body.Close()
+
+	// Make sure we get back correct status code
+	if response.StatusCode != http.StatusAccepted {
+		app.errorJSON(w, errors.New("error calling log service"))
+		return
+	}
+
+	// Create variable we'll read response.Body into
+	var payload = jsonResponse{
+		Error:   false,
+		Message: "logged",
+	}
+
+	app.writeJSON(w, http.StatusAccepted, payload)
+}
+
+// RabbitMQ log
 func (app *Config) logEventViaRabbit(w http.ResponseWriter, l LogPayload) {
 	err := app.pushToQueue(l.Name, l.Data)
 	if err != nil {
@@ -223,4 +231,32 @@ func (app *Config) pushToQueue(name, msg string) error {
 	}
 
 	return nil
+}
+
+// RPC log
+func (app *Config) logEventViaRPC(w http.ResponseWriter, l LogPayload) {
+	client, err := rpc.Dial("tcp", "logger-service:5001")
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	rpcPayload := RPCPayload{
+		Name: l.Name,
+		Data: l.Data,
+	}
+
+	var result string
+	err = client.Call("RPCServer.LogInfo", rpcPayload, &result)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	payload := jsonResponse{
+		Error:   false,
+		Message: result,
+	}
+
+	app.writeJSON(w, http.StatusAccepted, payload)
 }
