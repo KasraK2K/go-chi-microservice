@@ -28,6 +28,9 @@
 			"amqp",
 			"bson",
 			"gohtml",
+			"INITDB",
+			"kasrak",
+			"mailhog",
 			"Premailer",
 			"rabbitmq",
 			"SSLTLS"

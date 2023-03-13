@@ -3,26 +3,16 @@ version: '3'
 services:
   # Broker Service ---------------------------------------------------------------
   broker-service:
-    build:
-      context: ./../broker-service
-      dockerfile: ./../broker-service/broker-service.dockerfile
+    image: kasrak2k/broker-service:1.0.0
     ports:
       - "8080:80"
-    container_name: broker-service
-    restart: always
     deploy:
       mode: replicated
       replicas: 1
 
   # Authentication Service -------------------------------------------------------
   authentication-service:
-    build:
-      context: ./../authentication-service
-      dockerfile: ./../authentication-service/authentication-service.dockerfile
-    ports:
-      - "8081:80"
-    container_name: authentication-service
-    restart: always
+    image: kasrak2k/authentication-service:1.0.0
     deploy:
       mode: replicated
       replicas: 1
@@ -31,22 +21,14 @@ services:
 
   # Logger Service ---------------------------------------------------------------
   logger-service:
-    build:
-      context: ./../logger-service
-      dockerfile: ./../logger-service/logger-service.dockerfile
-    container_name: logger-service
-    restart: always
+    image: kasrak2k/logger-service:1.0.0
     deploy:
       mode: replicated
       replicas: 1
 
   # Mailer Service ---------------------------------------------------------------
   mail-service:
-    build:
-      context: ./../mail-service
-      dockerfile: ./../mail-service/mail-service.dockerfile
-    container_name: mail-service
-    restart: always
+    image: kasrak2k/mail-service:1.0.0
     deploy:
       mode: replicated
       replicas: 1
@@ -62,10 +44,7 @@ services:
 
   # Listener Service -------------------------------------------------------------
   listener-service:
-    build:
-      context: ./../listener-service
-      dockerfile: ./../listener-service/listener-service.dockerfile
-    container_name: listener-service
+    image: kasrak2k/listener-service:1.0.0
     deploy:
       mode: replicated
       replicas: 1
@@ -75,7 +54,6 @@ services:
     image: "postgres:14.2"
     ports:
       - "5432:5432"
-    container_name: postgres
     restart: always
     deploy:
       mode: replicated
@@ -92,7 +70,8 @@ services:
     image: "mongo:4.2.16-bionic"
     ports:
       - "27017:27017"
-    container_name: mongo
+    deploy:
+      mode: global
     environment:
       MONGO_INITDB_DATABASE: logs
       MONGO_INITDB_ROOT_USERNAME: admin
@@ -104,18 +83,14 @@ services:
   mailhog:
     image: "mailhog/mailhog:latest"
     ports:
-      - "1025:1025"
       - "8025:8025"
-    container_name: mailhog
+    deploy:
+      mode: global
 
   # RabbitMQ Service -------------------------------------------------------------
   rabbitmq:
     image: "rabbitmq:3.9-alpine"
-    ports:
-      - "5672:5672"
-    container_name: rabbitmq
     deploy:
-      mode: replicated
-      replicas: 1
-    volumes:
-      - ./db-data/rabbitmq/:/var/lib/rabbitmq/
+      mode: global
+    # volumes:
+    #   - ./db-data/rabbitmq/:/var/lib/rabbitmq/
